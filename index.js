@@ -8,6 +8,10 @@ const fs = require('fs');
   const amountMax = Math.max.apply(Math, data.map((obj) => obj.amount ));
   normalizeAmount(data, amountMax);
 
+  const dataGrouped = groupBy(data, e => e.category);
+
+  sortByAmount(dataGrouped);
+
 })();
 
 function parseCsv(results) {
@@ -23,5 +27,24 @@ function parseCsv(results) {
 function normalizeAmount(results, amountMax) {
   for (let i = 0; i < results.length; i++) {
     results[i].amount /= amountMax;
+  }
+}
+function groupBy(list, keyGetter) {
+  const map = new Map();
+  list.forEach((item) => {
+       const key = keyGetter(item);
+       const collection = map.get(key);
+       if (!collection) {
+           map.set(key, [item]);
+       } else {
+           collection.push(item);
+       }
+  });
+  return map;
+}
+function sortByAmount(dataGrouped) {
+  for (const key of dataGrouped.keys()) {
+    const arr = dataGrouped.get(key);
+    arr.sort((a, b) => a.amount - b.amount);
   }
 }
